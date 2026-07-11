@@ -13,10 +13,10 @@
 - [x] Committed
 
 ## Prompt 3
-- [ ] Generated
-- [ ] Runs
-- [ ] Tested
-- [ ] Committed
+- [x] Generated
+- [x] Runs
+- [x] Tested
+- [x] Committed
 
 ## Prompt 4
 - [ ] Generated
