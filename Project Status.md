@@ -19,10 +19,10 @@
 - [x] Committed
 
 ## Prompt 4
-- [ ] Generated
-- [ ] Runs
-- [ ] Tested
-- [ ] Committed
+- [x] Generated
+- [x] Runs
+- [x] Tested
+- [x] Committed
 
 ## Prompt 5
 - [ ] Generated
