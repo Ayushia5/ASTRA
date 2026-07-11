@@ -1,16 +1,16 @@
 # ASTRA Development Status
 
 ## Prompt 1
-- [ ] Generated
-- [ ] Runs
-- [ ] Tested
-- [ ] Committed
+- [x] Generated
+- [x] Runs
+- [x] Tested
+- [x] Committed
 
 ## Prompt 2
-- [ ] Generated
-- [ ] Runs
-- [ ] Tested
-- [ ] Committed
+- [x] Generated
+- [x] Runs
+- [x] Tested
+- [x] Committed
 
 ## Prompt 3
 - [ ] Generated
