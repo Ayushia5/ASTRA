@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: satark-api
+    env: python
+    buildCommand: apt-get install -y tesseract-ocr tesseract-ocr-hin tesseract-ocr-urd && pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+  - type: worker
+    name: satark-monitor
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python workflows/monitor_workflow.py

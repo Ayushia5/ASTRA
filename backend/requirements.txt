@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pytesseract
+Pillow
+langdetect
+neo4j
+python-dotenv
+httpx
+python-multipart
