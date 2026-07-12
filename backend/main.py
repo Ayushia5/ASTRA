@@ -20,8 +20,8 @@ app.add_middleware(
 )
 
 app.include_router(upload.router, prefix="/upload", tags=["upload"])
-app.include_router(signals.router, prefix="/signals", tags=["signals"])
-app.include_router(graph.router, prefix="/graph-data", tags=["graph"])
+app.include_router(signals.router, prefix="", tags=["signals"])
+app.include_router(graph.router, prefix="", tags=["graph"])
 
 @app.get("/health")
 async def health_check():
