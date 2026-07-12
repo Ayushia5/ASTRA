@@ -49,10 +49,10 @@
 - [x] Committed
 
 ## Prompt 9
-- [ ] Generated
-- [ ] Runs
-- [ ] Tested
-- [ ] Committed
+- [x] Generated
+- [x] Runs
+- [x] Tested
+- [x] Committed
 
 ## Prompt 10
 - [ ] Generated
