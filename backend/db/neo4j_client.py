@@ -9,10 +9,11 @@ load_dotenv()
 NEO4J_DATABASE = os.getenv("NEO4J_DATABASE", "neo4j")
 
 _driver = None
+_use_bolt_fallback = False
 
 def get_driver():
     """Get or initialize the Neo4j driver singleton."""
-    global _driver
+    global _driver, _use_bolt_fallback
     if _driver is None:
         uri = os.getenv("NEO4J_URI", "")
         user = os.getenv("NEO4J_USERNAME", "")
@@ -20,14 +21,19 @@ def get_driver():
         try:
             _driver = GraphDatabase.driver(uri, auth=(user, password))
             _driver.verify_connectivity()
-            print(f"[INFO] get_driver: Connected using {uri}")
+            # Test a real query with the configured database to catch AuraDB issues early
+            with _driver.session(database=NEO4J_DATABASE) as s:
+                s.run("RETURN 1").consume()
+            print(f"[INFO] get_driver: Connected using {uri} (database={NEO4J_DATABASE})")
         except Exception as e:
-            if "Unable to retrieve routing information" in str(e) and uri.startswith("neo4j+s://"):
+            err = str(e)
+            if ("Unable to retrieve routing information" in err or "DatabaseNotFound" in err or "not found" in err) and uri.startswith("neo4j+s://"):
                 fallback_uri = uri.replace("neo4j+s://", "bolt+ssc://")
                 print(f"[WARNING] get_driver: Failed with neo4j+s://. Retrying with {fallback_uri} ...")
                 try:
                     _driver = GraphDatabase.driver(fallback_uri, auth=(user, password))
                     _driver.verify_connectivity()
+                    _use_bolt_fallback = True
                     print(f"[INFO] get_driver: Successfully connected using fallback: {fallback_uri}")
                 except Exception as fallback_e:
                     print(f"[WARNING] get_driver: Fallback also failed - {fallback_e}")
@@ -36,6 +42,13 @@ def get_driver():
                 print(f"[WARNING] get_driver: Failed to initialize - {e}")
                 raise
     return _driver
+
+def get_session():
+    """Open a session with the correct database config for the active connection."""
+    driver = get_driver()
+    if _use_bolt_fallback:
+        return driver.session()
+    return driver.session(database=NEO4J_DATABASE)
 
 def verify_connection() -> bool:
     """Verify connectivity to the Neo4j database."""
@@ -87,8 +100,7 @@ def create_signal_node(card: dict) -> str:
         "questions": q_pairs
     }
     try:
-        driver = get_driver()
-        with driver.session(database=NEO4J_DATABASE) as session:
+        with get_session() as session:
             result = session.run(query, **params)
             record = result.single()
             return record["node_id"] if record else card.get("signal_id", "unknown")
@@ -99,8 +111,7 @@ def create_signal_node(card: dict) -> str:
 def get_all_signals(limit: int = 50) -> list:
     """Fetch all Post nodes ordered by first_seen descending."""
     try:
-        driver = get_driver()
-        with driver.session(database=NEO4J_DATABASE) as session:
+        with get_session() as session:
             result = session.run(
                 "MATCH (p:Post) RETURN p ORDER BY p.first_seen DESC LIMIT $limit",
                 {"limit": limit}
@@ -113,8 +124,7 @@ def get_all_signals(limit: int = 50) -> list:
 def get_spread_graph(exam_name: str) -> dict:
     """Return nodes and edges for the spread graph visualization."""
     try:
-        driver = get_driver()
-        with driver.session(database=NEO4J_DATABASE) as session:
+        with get_session() as session:
             result = session.run(
                 "MATCH (p:Post)-[:RELATED_TO]->(e:ExamEvent {name: $exam_name}) RETURN p, e",
                 {"exam_name": exam_name}
