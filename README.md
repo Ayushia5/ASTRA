@@ -1,4 +1,4 @@
-# Astra — Assessment Signal Triage & Risk Analysis
+# Astra: Assessment Signal Triage & Risk Analysis
 
 > **Protecting Trust in Every Examination**
 
