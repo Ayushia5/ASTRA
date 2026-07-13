@@ -29,7 +29,7 @@ def classify_content(text: str) -> dict:
     )
     
     payload = {
-        "model": "sarvam-m",
+        "model": "sarvam-105b",
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": text}
